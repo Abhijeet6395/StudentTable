@@ -12,4 +12,6 @@ interface StudentDao {
 //Selecting Students
     @Query("SELECT * FROM students")
     fun getAllStudents(): Flow<List<Student>>
+    @Query("SELECT * FROM students WHERE name = :name OR studentClass = :studentClass OR rollNo = :rollNo")
+    suspend fun getStudent(name: String, studentClass: String, rollNo: Int): Student?
 }

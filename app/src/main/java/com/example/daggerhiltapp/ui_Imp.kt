@@ -13,12 +13,13 @@ import com.example.daggerhiltapp.ViewModel.StudentViewModel
 @Composable
 fun StudentAppScreen(studentViewModel: StudentViewModel) {
     val students by studentViewModel.allStudents.collectAsState()
+    val retrievedStudent by studentViewModel.retrievedStudent.collectAsState()
 
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var studentClass by remember { mutableStateOf(TextFieldValue("")) }
     var rollNo by remember { mutableStateOf(TextFieldValue("")) }
 
-    //  show error messages
+    // Show error messages
     var showNameError by remember { mutableStateOf(false) }
     var showClassError by remember { mutableStateOf(false) }
     var showRollNoError by remember { mutableStateOf(false) }
@@ -95,30 +96,57 @@ fun StudentAppScreen(studentViewModel: StudentViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                if (name.text.isNotEmpty() && studentClass.text.isNotEmpty() && rollNo.text.isNotEmpty()) {
-                    val student = Student(
-                        name = name.text,
-                        studentClass = studentClass.text,
-                        rollNo = rollNo.text.toInt()
-                    )
-                    studentViewModel.insertStudent(student)
-                    name = TextFieldValue("")
-                    studentClass = TextFieldValue("")
-                    rollNo = TextFieldValue("")
-                } else {
-                    showNameError = name.text.isEmpty()
-                    showClassError = studentClass.text.isEmpty()
-                    showRollNoError = rollNo.text.isEmpty()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            enabled = !(name.text.isEmpty() || studentClass.text.isEmpty() || rollNo.text.isEmpty())
-        ) {
-            Text(text = "INSERT")
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Button(
+                onClick = {
+                    if (name.text.isNotEmpty() && studentClass.text.isNotEmpty() && rollNo.text.isNotEmpty()) {
+                        val student = Student(
+                            name = name.text,
+                            studentClass = studentClass.text,
+                            rollNo = rollNo.text.toInt()
+                        )
+                        studentViewModel.insertStudent(student)
+                        name = TextFieldValue("")
+                        studentClass = TextFieldValue("")
+                        rollNo = TextFieldValue("")
+                    } else {
+                        showNameError = name.text.isEmpty()
+                        showClassError = studentClass.text.isEmpty()
+                        showRollNoError = rollNo.text.isEmpty()
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                enabled = !(name.text.isEmpty() || studentClass.text.isEmpty() || rollNo.text.isEmpty())
+            ) {
+                Text(text = "INSERT")
+            }
+
+            // GET button
+            Button(
+                onClick = {
+                    if (name.text.isNotEmpty() && studentClass.text.isNotEmpty() && rollNo.text.isNotEmpty()) {
+                        studentViewModel.getStudent(name.text, studentClass.text, rollNo.text.toInt())
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text(text = "GET")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Display retrieved student
+        retrievedStudent?.let { student ->
+            Text(
+                text = "Retrieved Student: Name - ${student.name}, Class - ${student.studentClass}, Roll No - ${student.rollNo}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
     }
 }

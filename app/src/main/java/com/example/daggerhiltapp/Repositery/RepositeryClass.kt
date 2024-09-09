@@ -12,4 +12,7 @@ class StudentRepository @Inject constructor(private val studentDao: StudentDao) 
     suspend fun insert(student: Student) {
         studentDao.insertStudent(student)
     }
+    suspend fun getStudent(name: String, studentClass: String, rollNo: Int): Student? {
+        return studentDao.getStudent(name, studentClass, rollNo)
+    }
 }
